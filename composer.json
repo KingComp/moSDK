@@ -1,0 +1,28 @@
+{
+    "name": "myobject/sdk",
+    "version": "1.0.0",
+    "description": "SDK for livingcore projects",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.4",
+        "psr/http-message": "^1.0",
+        "lcobucci/jwt": "^3.3",
+        "league/oauth2-client": "^2.4",
+        "yiisoft/yii2": "^2.0",
+        "ramsey/uuid": "^3.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyObject\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Pavel",
+            "email": "it.vishin@gmail.com"
+        }
+    ]
+}

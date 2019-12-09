@@ -1,0 +1,4 @@
+### Composer ignore
+composer.phar
+/vendor/
+
