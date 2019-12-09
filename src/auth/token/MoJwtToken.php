@@ -57,4 +57,9 @@ class MoJwtToken
     {
         return $this->refreshToken;
     }
+
+    public function isExpired()
+    {
+        return $this->getJwt()->isExpired();
+    }
 }

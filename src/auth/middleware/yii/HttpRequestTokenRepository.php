@@ -16,7 +16,6 @@ use yii\web\Request;
  * Репозиторий извлекающий токен из Http запроса
  * @package MyObject\auth\middleware\yii
  */
-
 class HttpRequestTokenRepository implements TokenRepository
 {
     const ACCESS_TOKEN_COOKIE_NAME = 'access_token';
@@ -36,7 +35,7 @@ class HttpRequestTokenRepository implements TokenRepository
      */
     private $parser;
 
-    /** @var Token */
+    /** @var MoJwtToken */
     private $token;
 
     /** @var string */
@@ -50,23 +49,35 @@ class HttpRequestTokenRepository implements TokenRepository
     public function __construct(Request $request, AuthServerInterface $authServer)
     {
         $this->request = $request;
+        if (
+            !($token = $this->getAuthTokenFromRequest()) ||
+            !($refreshToken = $this->getRefreshTokenFromRequest())
+        ) {
+            $this->token = null;
+        }else{
+            $this->token = new MoJwtToken(
+                $token,
+                $refreshToken
+            );
+        }
         $this->authServer = $authServer;
         $this->parser = new Parser();
     }
 
     public function getToken(): MoJwtToken
     {
-        if(!$this->token)
-            $this->token = $this->getAuthTokenFromRequest();
-        return new MoJwtToken($this->token, $this->refreshToken);
+        $this->token;
     }
 
     public function getFreshToken(): MoJwtToken
     {
-        if($this->token->isExpired()){
-            $this->refreshToken();
+        if (
+            !is_null($this->token) &&
+            $this->token->isExpired()
+        ) {
+            $token = $this->refreshToken();
         }
-        return new MoJwtToken($this->token, $this->refreshToken);
+        return $token;
     }
 
 
@@ -84,12 +95,14 @@ class HttpRequestTokenRepository implements TokenRepository
         return null;
     }
 
-    private function getRefreshToken(){
-        if(!$this->refreshToken){
-           $this->refreshToken = $this->getRefreshTokenFromRequest();
+    private function getRefreshToken()
+    {
+        if (!$this->refreshToken) {
+            $this->refreshToken = $this->getRefreshTokenFromRequest();
         }
         return $this->refreshToken;
     }
+
     private function getRefreshTokenFromRequest()
     {
         $request = $this->request;
@@ -106,9 +119,16 @@ class HttpRequestTokenRepository implements TokenRepository
     {
         $refreshToken = $this->getRefreshToken();
         $tokenResponse = $this->authServer->requestTokenFor(new RefreshTokenGrantType($refreshToken));
-        $this->token = $this->parser->parse($tokenResponse->getToken());
-        $this->refreshToken = $tokenResponse->getRefreshToken();
-        return $this;
+        if (
+            ($token = $this->parser->parse($tokenResponse->getToken())) &&
+            ( $refreshToken = $tokenResponse->getRefreshToken())
+        ) {
+            $this->token = new MoJwtToken(
+                $token,
+                $refreshToken
+            );
+        }
+        return $this->token;
     }
 
 }

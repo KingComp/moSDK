@@ -24,10 +24,7 @@ class JWTAuth extends AuthMethod
     private $tokenRepositoryBuilder;
 
     private $verificator;
-    /**
-     * @var IdentityInterface
-     */
-    private $identityRepository;
+
     /**
      * @var UserRegistrableInterface|null
      */
@@ -38,21 +35,18 @@ class JWTAuth extends AuthMethod
      * @param array $config
      * @param HttpRequestTokenRepositoryBuilder $tokenRepositoryBuilder
      * @param JwtVerificator $verificator
-     * @param IdentityInterface $identityRepository
-     * @param UserRegistrableInterface|null $userRepository
+     * @param UserRegistrableInterface|null $userService
      */
     public function __construct(
-        $config,
         HttpRequestTokenRepositoryBuilder $tokenRepositoryBuilder,
         JwtVerificator $verificator,
-        IdentityInterface $identityRepository,
-        UserRegistrableInterface $userRepository = null
+        UserRegistrableInterface $userService = null,
+        $config = []
     ) {
         parent::__construct($config);
         $this->tokenRepositoryBuilder = $tokenRepositoryBuilder;
         $this->verificator = $verificator;
-        $this->identityRepository = $identityRepository;
-        $this->userRepository = $userRepository;
+        $this->userRepository = $userService;
     }
 
     public function authenticate($user, $request, $response)
@@ -66,7 +60,9 @@ class JWTAuth extends AuthMethod
     private function JwtAuthenticate(JwtLoginInterface $user, $request, $response)
     {
         $httpRequestTokenRepository = $this->tokenRepositoryBuilder->getTokenRepository($request);
-        $moJwtToken = $httpRequestTokenRepository->getFreshToken();
+        if (!$moJwtToken = $httpRequestTokenRepository->getFreshToken()) {
+            return;
+        }
         if (!$this->isTokenValid($moJwtToken)) {
             throw new ForbiddenHttpException('Token verification Error');
         }

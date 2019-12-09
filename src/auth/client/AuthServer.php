@@ -10,7 +10,12 @@ use MyObject\auth\client\grantTypes\GrantTypeInterface;
 
 class AuthServer extends GenericProvider implements AuthServerInterface
 {
-    public function requestTokenFor(GrantTypeInterface $grantType, $options = []):AccessTokenInterface
+    public function __construct(array $options = [])
+    {
+        parent::__construct($options);
+    }
+
+    public function requestTokenFor(GrantTypeInterface $grantType, $options = []): AccessTokenInterface
     {
         return $this->getAccessToken(
             $grantType->getGrantTypeName(),
