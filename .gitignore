@@ -1,4 +1,5 @@
 ### Composer ignore
+.idea
 composer.phar
 /vendor/
 
