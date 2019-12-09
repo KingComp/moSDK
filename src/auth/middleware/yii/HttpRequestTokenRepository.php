@@ -64,12 +64,12 @@ class HttpRequestTokenRepository implements TokenRepository
         $this->parser = new Parser();
     }
 
-    public function getToken(): MoJwtToken
+    public function getToken(): ?MoJwtToken
     {
         $this->token;
     }
 
-    public function getFreshToken(): MoJwtToken
+    public function getFreshToken(): ?MoJwtToken
     {
         if (
             !is_null($this->token) &&

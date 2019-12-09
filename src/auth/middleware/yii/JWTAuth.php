@@ -19,6 +19,12 @@ class JWTAuth extends AuthMethod
     public $autoRegistration = false;
 
     /**
+     * login user with data from JWT if no user found
+     * @var bool
+     */
+    public $loginIfNotExists = true;
+
+    /**
      * @var HttpRequestTokenRepositoryBuilder
      */
     private $tokenRepositoryBuilder;
@@ -71,11 +77,11 @@ class JWTAuth extends AuthMethod
                 new MoUser(
                     new MoUserId($moJwtToken->getIdentityId()),
                     $moJwtToken->getEmail(),
-                    $moJwtToken->getCompany()
+                    $moJwtToken->getCompanyId()
                 )
             );
         }
-        $user->loginWithJwt($moJwtToken);
+        $user->loginWithJwt($moJwtToken, $this->loginIfNotExists);
     }
 
     private function isTokenValid(MoJwtToken $token)

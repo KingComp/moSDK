@@ -8,5 +8,5 @@ use MyObject\auth\token\MoJwtToken;
 
 interface JwtLoginInterface
 {
-    public function loginWithJwt(MoJwtToken $moJwtToken);
+    public function loginWithJwt(MoJwtToken $moJwtToken, $loginIfNotExists = false);
 }

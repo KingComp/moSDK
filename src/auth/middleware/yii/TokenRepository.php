@@ -8,7 +8,7 @@ use MyObject\auth\token\MoJwtToken;
 
 interface TokenRepository
 {
-    public function getToken(): MoJwtToken;
+    public function getToken(): ?MoJwtToken;
 
-    public function getFreshToken(): MoJwtToken;
+    public function getFreshToken(): ?MoJwtToken;
 }

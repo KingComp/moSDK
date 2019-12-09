@@ -40,9 +40,9 @@ class MoJwtToken
         return $this->getClaim('email');
     }
 
-    public function getCompany()
+    public function getCompanyId()
     {
-        return $this->getClaim('company');
+        return $this->getClaim('companyid');
     }
 
     public function getJwt()
