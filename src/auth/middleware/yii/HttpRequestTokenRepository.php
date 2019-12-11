@@ -74,9 +74,9 @@ class HttpRequestTokenRepository implements TokenRepository
             !is_null($this->token) &&
             $this->token->isExpired()
         ) {
-            $token = $this->refreshToken();
+            $this->token = $this->refreshToken();
         }
-        return $token;
+        return $this->token;
     }
 
 

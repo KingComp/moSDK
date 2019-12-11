@@ -82,6 +82,7 @@ class JWTAuth extends AuthMethod
             );
         }
         $user->loginWithJwt($moJwtToken, $this->loginIfNotExists);
+        return true;
     }
 
     private function isTokenValid(MoJwtToken $token)
