@@ -67,7 +67,7 @@ class JWTAuth extends AuthMethod
     {
         $httpRequestTokenRepository = $this->tokenRepositoryBuilder->getTokenRepository($request);
         if (!$moJwtToken = $httpRequestTokenRepository->getFreshToken()) {
-            return;
+            return true;
         }
         if (!$this->isTokenValid($moJwtToken)) {
             throw new ForbiddenHttpException('Token verification Error');

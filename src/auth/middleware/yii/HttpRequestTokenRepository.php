@@ -5,7 +5,6 @@ namespace MyObject\auth\middleware\yii;
 
 
 use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Token;
 use MyObject\auth\client\AuthServerInterface;
 use MyObject\auth\client\grantTypes\RefreshTokenGrantType;
 use MyObject\auth\token\MoJwtToken;
@@ -49,6 +48,8 @@ class HttpRequestTokenRepository implements TokenRepository
     public function __construct(Request $request, AuthServerInterface $authServer)
     {
         $this->request = $request;
+        $this->authServer = $authServer;
+        $this->parser = new Parser();
         if (
             !($token = $this->getAuthTokenFromRequest()) ||
             !($refreshToken = $this->getRefreshTokenFromRequest())
@@ -60,8 +61,6 @@ class HttpRequestTokenRepository implements TokenRepository
                 $refreshToken
             );
         }
-        $this->authServer = $authServer;
-        $this->parser = new Parser();
     }
 
     public function getToken(): ?MoJwtToken
@@ -85,11 +84,13 @@ class HttpRequestTokenRepository implements TokenRepository
     {
         $request = $this->request;
         if ($request->headers->has(self::ACCESS_TOKEN_HTTP_HEADER)) {
-            $token = $request->headers->get(self::ACCESS_TOKEN_HTTP_HEADER);
+            $bearerToken = $request->headers->get(self::ACCESS_TOKEN_HTTP_HEADER);
+            $token = $this->extractTokenFromBearerString($bearerToken);
             return $this->parser->parse($token);
         }
         if ($request->cookies->has(self::ACCESS_TOKEN_COOKIE_NAME)) {
-            $token = $request->cookies->get(self::ACCESS_TOKEN_COOKIE_NAME);
+            $bearerToken = $request->cookies->get(self::ACCESS_TOKEN_COOKIE_NAME)->value;
+            $token = $this->extractTokenFromBearerString($bearerToken);
             return $this->parser->parse($token);
         }
         return null;
@@ -129,6 +130,15 @@ class HttpRequestTokenRepository implements TokenRepository
             );
         }
         return $this->token;
+    }
+
+    private function extractTokenFromBearerString($string)
+    {
+        if (preg_match('/^Bearer\s+(.*?)$/', $string, $matches)) {
+            return $matches[1];
+        } else {
+            throw new \Exception('Cant`t set Bearer token. Bad token string');
+        }
     }
 
 }

@@ -32,17 +32,23 @@ class MoJwtToken
 
     public function getIdentityId()
     {
-        return $this->getClaim('sub');
+        return $this->getJwt()->getClaim('sub');
     }
 
     public function getEmail()
     {
-        return $this->getClaim('email');
+        if (!$this->getJwt()->hasClaim('email')){
+            return null;
+        }
+        return $this->getJwt()->getClaim('email');
     }
 
     public function getCompanyId()
     {
-        return $this->getClaim('companyid');
+        if (!$this->getJwt()->hasClaim('companyid')){
+            return null;
+        }
+        return $this->getJwt()->getClaim('companyid');
     }
 
     public function getJwt()
