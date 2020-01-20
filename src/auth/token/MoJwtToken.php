@@ -45,10 +45,10 @@ class MoJwtToken
 
     public function getCompanyId()
     {
-        if (!$this->getJwt()->hasClaim('companyid')){
+        if (!$this->getJwt()->hasClaim('company_id')){
             return null;
         }
-        return $this->getJwt()->getClaim('companyid');
+        return $this->getJwt()->getClaim('company_id');
     }
 
     public function getJwt()
